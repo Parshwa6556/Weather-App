@@ -4,12 +4,13 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'npm install'
+                // Use bat instead of sh for Windows
+                bat 'npm install'
             }
         }
         stage('Test') {
             steps {
-                sh 'npm test'
+                bat 'npm test'
             }
         }
         stage('Deploy') {
