@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-deployment
+  labels:
+    app: weather
+spec:
+  replicas: 3  # Number of pods you want to run
+  selector:
+    matchLabels:
+      app: weather
+  template:
+    metadata:
+      labels:
+        app: weather
+    spec:
+      containers:
+      - name: weather-container
+        image: parshwapatel/weather-app:latest  # Replace with your Docker image
+        ports:
+        - containerPort: 3000  # Adjust based on your app's port
