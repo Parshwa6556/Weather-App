@@ -1,9 +1,10 @@
 pipeline {
     agent any
     tools {
-    // Replace 'SonarQube Scanner' with the name of the SonarQube installation from Jenkins configuration
-    sonarScanner 'SonarQube Scanner'  // This is the name you configured in Jenkins
-}
+        // Use the correct name for SonarQube Scanner from the Jenkins configuration
+        // Ensure that 'SonarQube Scanner' is the name you configured in Jenkins tool configuration
+        tool name: 'SonarQube Scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+    }
 
     stages {
         stage('Checkout SCM') {
@@ -24,7 +25,8 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 script {
-                    withSonarQubeEnv('SonarQube') {  // Ensure this matches your SonarQube name in Jenkins
+                    // Ensure 'SonarQube' matches the name you configured in Jenkins for SonarQube server
+                    withSonarQubeEnv('SonarQube') {  
                         bat "sonar-scanner -Dsonar.projectKey=my-nodejs-project"
                     }
                 }
