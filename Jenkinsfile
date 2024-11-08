@@ -1,8 +1,8 @@
 pipeline {
     agent any
     tools {
-        // Use the correct SonarQube scanner installation name
-        sonarQubeScanner 'SonarQube Scanner'  // Match the name you configured in Global Tool Configuration
+        // Use the correct SonarQube Scanner installation name
+        sonarScanner 'SonarQube Scanner'  // Correct tool declaration here
     }
 
     stages {
