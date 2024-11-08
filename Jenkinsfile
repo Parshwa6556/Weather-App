@@ -1,8 +1,10 @@
 pipeline {
     agent any
     tools {
-        sonarQubeScanner 'SonarQube Scanner'  // The name must match your configuration
-    }
+    // Replace 'SonarQube Scanner' with the name of the SonarQube installation from Jenkins configuration
+    sonarScanner 'SonarQube Scanner'  // This is the name you configured in Jenkins
+}
+
     stages {
         stage('Checkout SCM') {
             steps {
