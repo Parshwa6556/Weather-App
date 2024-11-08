@@ -1,9 +1,8 @@
 pipeline {
     agent any
     tools {
-        // Use the correct name for SonarQube Scanner from the Jenkins configuration
-        // Ensure that 'SonarQube Scanner' is the name you configured in Jenkins tool configuration
-        tool name: 'SonarQube Scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+        // Use the correct SonarQube scanner installation name
+        sonarQubeScanner 'SonarQube Scanner'  // Match the name you configured in Global Tool Configuration
     }
 
     stages {
@@ -25,7 +24,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 script {
-                    // Ensure 'SonarQube' matches the name you configured in Jenkins for SonarQube server
+                    // The server name 'SonarQube' should match the name you set in Jenkins configuration
                     withSonarQubeEnv('SonarQube') {  
                         bat "sonar-scanner -Dsonar.projectKey=my-nodejs-project"
                     }
@@ -35,7 +34,7 @@ pipeline {
         stage('Quality Gate') {
             steps {
                 script {
-                    waitForQualityGate()
+                    waitForQualityGate()  // Wait for SonarQube quality gate results
                 }
             }
         }
