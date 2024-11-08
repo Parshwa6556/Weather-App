@@ -1,8 +1,11 @@
 pipeline {
     agent any
     tools {
-        // Use the correct SonarQube Scanner installation name
-        sonarScanner 'SonarQube Scanner'  // Correct tool declaration here
+        sonarScanner 'SonarQube Scanner'  // Make sure this matches the tool name in Jenkins configuration
+    }
+
+    environment {
+        SONAR_TOKEN = credentials('your-sonar-token-id')  // Reference the token stored in Jenkins
     }
 
     stages {
@@ -24,9 +27,8 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 script {
-                    // The server name 'SonarQube' should match the name you set in Jenkins configuration
-                    withSonarQubeEnv('SonarQube') {  
-                        bat "sonar-scanner -Dsonar.projectKey=my-nodejs-project"
+                    withSonarQubeEnv('SonarQube') {
+                        bat "sonar-scanner -Dsonar.projectKey=nodejs-app -Dsonar.login=$SONAR_TOKEN"  // Use the token securely
                     }
                 }
             }
