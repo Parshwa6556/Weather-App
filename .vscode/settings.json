@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/cb5a44ab-da9a-4882-b90f-03a76d0521c7/resourceGroups/nodejs/providers/Microsoft.Web/sites/nodeweatherapp",
+    "appService.deploySubpath": "."
+}
