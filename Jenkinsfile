@@ -1,49 +1,61 @@
 pipeline {
     agent any
-    tools {
-        sonarScanner 'SonarQube Scanner'  // Make sure this matches the tool name in Jenkins configuration
-    }
 
     environment {
-        SONAR_TOKEN = credentials('your-sonar-token-id')  // Reference the token stored in Jenkins
+        // Set SonarQube environment variables (configured SonarQube server in Jenkins first)
+        SONARQUBE_SERVER = 'SonarQube'  // The name you configured for SonarQube in Jenkins
     }
 
     stages {
-        stage('Checkout SCM') {
-            steps {
-                checkout scm
-            }
-        }
         stage('Build') {
             steps {
+                // Install dependencies
                 bat 'npm install'
             }
         }
+        
         stage('Test') {
             steps {
+                // Run tests (ensure you have tests or specify a test script)
                 bat 'npm test'
             }
         }
+        
         stage('SonarQube Analysis') {
             steps {
+                // Run SonarQube analysis
+                withSonarQubeEnv(SONARQUBE_SERVER) {
+                    bat 'sonar-scanner -Dsonar.projectKey=my-nodejs-project'
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
                 script {
-                    withSonarQubeEnv('SonarQube') {
-                        bat "sonar-scanner -Dsonar.projectKey=nodejs-app -Dsonar.login=$SONAR_TOKEN"  // Use the token securely
+                    // Wait for the SonarQube Quality Gate to pass/fail
+                    timeout(time: 1, unit: 'MINUTES') {
+                        def qualityGate = waitForQualityGate()
+                        if (qualityGate.status != 'OK') {
+                            error "SonarQube Quality Gate failed: ${qualityGate.status}"
+                        }
                     }
                 }
             }
         }
-        stage('Quality Gate') {
-            steps {
-                script {
-                    waitForQualityGate()  // Wait for SonarQube quality gate results
-                }
-            }
-        }
+
         stage('Deploy') {
             steps {
-                echo 'Deploying...'
+                echo 'Deploying the application...'
+                // Add deployment steps here (e.g., to Nexus, Docker, etc.)
             }
+        }
+    }
+
+    post {
+        always {
+            echo 'Cleaning up workspace...'
+            cleanWs()  // Cleanup the workspace after the pipeline
         }
     }
 }
