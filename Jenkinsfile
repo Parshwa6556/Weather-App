@@ -2,42 +2,42 @@ pipeline {
     agent any
 
     environment {
-        // Define the registry URL and Nexus credentials
         NEXUS_URL = "http://localhost:8081/repository/WeatherApp/"
         NEXUS_USERNAME = "admin"
         NEXUS_PASSWORD = "Parshwa@9099"
         NEXUS_TOKEN = "0898ee46-6ee2-31cc-98d3-c3c7acea1403"
     }
 
+    tools {
+        // Ensure the Node.js installation name here matches the Jenkins configuration (e.g., NodeJS 20.17.0)
+        nodejs 'NodeJS 20.17.0'
+    }
+
     stages {
         stage('Checkout') {
             steps {
-                // Checkout code from version control
-                git 'https://github.com/Parshwa6556/Weather-App.git'
+                // Explicitly specify the branch name
+                git branch: 'main', url: 'https://github.com/Parshwa6556/Weather-App.git'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                // Set up Node.js and install dependencies
-                script {
-                    def nodejs = tool name: 'NodeJS-20.17.0', type: 'NodeJSInstallation' // Reference the correct tool name
-                    env.PATH = "${nodejs}/bin:${env.PATH}"
-                }
+                // Ensure Node.js is available in PATH and install dependencies
                 sh 'npm install'
             }
         }
 
         stage('Build Project') {
             steps {
-                // Run build if needed (e.g., webpack, typescript compilation)
+                // Run any build commands (optional)
                 sh 'npm run build'
             }
         }
 
         stage('Publish to Nexus') {
             steps {
-                // Create .npmrc file with Nexus credentials dynamically
+                // Create .npmrc file dynamically for Nexus authentication
                 writeFile file: '.npmrc', text: """
                     //localhost:8081/repository/WeatherApp/:username=${NEXUS_USERNAME}
                     //localhost:8081/repository/WeatherApp/:password=${NEXUS_PASSWORD}
