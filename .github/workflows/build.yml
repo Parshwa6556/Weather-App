@@ -1,0 +1,42 @@
+name: Build and Analyze with SonarQube
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Node.js (Ensure Node.js is installed and available)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.17.0'  # or the version of Node.js you need
+
+      # Install project dependencies (npm install)
+      - name: Install dependencies
+        run: npm install
+
+      # Build the project (webpack or other build tools)
+      - name: Build project
+        run: npm run build
+
+      # Run SonarQube scan
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@v3
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      # Optionally, check the SonarQube Quality Gate (uncomment if needed)
+      # - name: Check Quality Gate
+      #   uses: sonarsource/sonarqube-quality-gate-action@master
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
