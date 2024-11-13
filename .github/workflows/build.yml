@@ -33,7 +33,7 @@ jobs:
         uses: sonarsource/sonarqube-scan-action@v3
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ' https://e787-69-166-117-246'
+          SONAR_HOST_URL: 'http://localhost:9000'
 
       # Optionally, check the SonarQube Quality Gate (uncomment if needed)
       # - name: Check Quality Gate
