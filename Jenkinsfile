@@ -2,45 +2,61 @@ pipeline {
     agent any
 
     environment {
-        // Set the environment variable to use SonarQube
-        SONARQUBE_SERVER = 'SonarQube'  // Use the name given in Jenkins SonarQube config
+        // Define the registry URL and Nexus credentials
+        NEXUS_URL = "http://localhost:8081/repository/WeatherApp/"
+        NEXUS_USERNAME = "admin"
+        NEXUS_PASSWORD = "Parshwa@9099"
+        NEXUS_TOKEN = "0898ee46-6ee2-31cc-98d3-c3c7acea1403"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Clone your repository
-                checkout scm
+                // Checkout code from version control
+                git 'https://github.com/Parshwa6556/weather.git'
             }
         }
 
-        stage('SonarQube Analysis') {
+        stage('Install Dependencies') {
             steps {
-                withSonarQubeEnv('SonarQube') {
-                    // Replace 'my-nodejs-project' with your actual SonarQube project key
-                    sh 'sonar-scanner -Dsonar.projectKey=my-nodejs-project -Dsonar.sources=.'  
-                }
-            }
-        }
-
-        stage('Quality Gate') {
-            steps {
+                // Set up Node.js and install dependencies
                 script {
-                    // Wait for SonarQube quality gate result
-                    timeout(time: 1, unit: 'MINUTES') {
-                        waitForQualityGate abortPipeline: true
-                    }
+                    def nodejs = tool name: 'NodeJS-14', type: 'NodeJSInstallation'
+                    env.PATH = "${nodejs}/bin:${env.PATH}"
                 }
+                sh 'npm install'
+            }
+        }
+
+        stage('Build Project') {
+            steps {
+                // Run build if needed (e.g., webpack, typescript compilation)
+                sh 'npm run build'
+            }
+        }
+
+        stage('Publish to Nexus') {
+            steps {
+                // Create .npmrc file with Nexus credentials dynamically
+                writeFile file: '.npmrc', text: """
+                    //localhost:8081/repository/WeatherApp/:username=${NEXUS_USERNAME}
+                    //localhost:8081/repository/WeatherApp/:password=${NEXUS_PASSWORD}
+                    //localhost:8081/repository/WeatherApp/:_authToken=${NEXUS_TOKEN}
+                    //localhost:8081/repository/WeatherApp/:always-auth=true
+                """
+
+                // Publish npm package to Nexus
+                sh 'npm publish --registry=${NEXUS_URL}'
             }
         }
     }
 
     post {
         success {
-            echo 'SonarQube analysis completed successfully.'
+            echo 'Build and deployment successful!'
         }
         failure {
-            echo 'SonarQube analysis failed.'
+            echo 'Build or deployment failed.'
         }
     }
 }
