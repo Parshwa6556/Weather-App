@@ -1,4 +1,5 @@
 version: '3'
+
 services:
   jenkins:
     image: jenkins/jenkins:lts
@@ -30,6 +31,14 @@ services:
       POSTGRES_USER: sonar
       POSTGRES_PASSWORD: sonar
       POSTGRES_DB: sonar
+
+  nexus:
+    image: sonatype/nexus3:latest
+    container_name: nexus
+    ports:
+      - "8081:8081"
+    volumes:
+      - nexus-data:/nexus-data
 
 volumes:
   jenkins_home:
