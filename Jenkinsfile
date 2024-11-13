@@ -13,7 +13,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout code from version control
-                git 'https://github.com/Parshwa6556/weather.git'
+                git 'https://github.com/Parshwa6556/Weather-App.git'
             }
         }
 
