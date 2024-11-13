@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/app.js",
+    "start": "webpack serve --mode development --open",
+    "build": "webpack --mode production",
     "test": "echo \"No tests specified\" && exit 0"
   },
   "keywords": [],
@@ -15,5 +16,15 @@
     "hbs": "^4.2.0",
     "nodemon": "^3.1.7",
     "request": "^2.88.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "babel-loader": "^8.4.1",
+    "node-polyfill-webpack-plugin": "^4.0.0",
+    "path-browserify": "^1.0.1",
+    "webpack": "^5.96.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.1.0"
   }
 }
