@@ -32,7 +32,7 @@ jobs:
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@v3
         env:
-          SONAR_TOKEN: sqp_63e1f56d07ccf7e211d09021c902aea6779fd19c
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: 'http://localhost:9000'
 
       # Optionally, check the SonarQube Quality Gate (uncomment if needed)
