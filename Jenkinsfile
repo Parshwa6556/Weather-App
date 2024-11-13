@@ -1,8 +1,7 @@
 pipeline {
     agent any
-
     environment {
-        // Define the registry URL and Nexus credentials
+        // Define Nexus URL and credentials
         NEXUS_URL = "http://localhost:8081/repository/WeatherApp/"
         NEXUS_USERNAME = "admin"
         NEXUS_PASSWORD = "Parshwa@9099"
@@ -12,14 +11,17 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Checkout code from version control
-                git 'https://github.com/Parshwa6556/Weather-App.git'
+                // Checkout the code from the Git repository
+                checkout scm
+                script {
+                    // Ensure it checks out the 'main' branch
+                    sh 'git checkout main'
+                }
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                // Set up Node.js and install dependencies
                 script {
                     def nodejs = tool name: 'NodeJS-14', type: 'NodeJSInstallation'
                     env.PATH = "${nodejs}/bin:${env.PATH}"
@@ -30,22 +32,18 @@ pipeline {
 
         stage('Build Project') {
             steps {
-                // Run build if needed (e.g., webpack, typescript compilation)
                 sh 'npm run build'
             }
         }
 
         stage('Publish to Nexus') {
             steps {
-                // Create .npmrc file with Nexus credentials dynamically
                 writeFile file: '.npmrc', text: """
                     //localhost:8081/repository/WeatherApp/:username=${NEXUS_USERNAME}
                     //localhost:8081/repository/WeatherApp/:password=${NEXUS_PASSWORD}
                     //localhost:8081/repository/WeatherApp/:_authToken=${NEXUS_TOKEN}
                     //localhost:8081/repository/WeatherApp/:always-auth=true
                 """
-
-                // Publish npm package to Nexus
                 sh 'npm publish --registry=${NEXUS_URL}'
             }
         }
