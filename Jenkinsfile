@@ -23,7 +23,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    def nodejs = tool name: 'NodeJS 23.1.0', type: 'NodeJSInstallation'
+                    def nodejs = tool name: 'NodeJS 20.17.0', type: 'NodeJSInstallation'
 
                     env.PATH = "${nodejs}/bin:${env.PATH}"
                 }
