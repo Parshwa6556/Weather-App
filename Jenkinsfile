@@ -2,27 +2,23 @@ pipeline {
     agent any
 
     environment {
-        SONARQUBE_SERVER = 'SonarQube'  // SonarQube server name in Jenkins
+        // Set the environment variable to use SonarQube
+        SONARQUBE_SERVER = 'SonarQube'  // Use the name given in Jenkins SonarQube config
     }
 
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                bat 'npm install'
+                // Clone your repository
+                checkout scm
             }
         }
-        
-        stage('Test') {
-            steps {
-                bat 'npm test'
-            }
-        }
-        
+
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv(SONARQUBE_SERVER) {
-                    // Use SonarScanner tool installed in Jenkins
-                    bat 'SonarQubeScanner/sonar-scanner -Dsonar.projectKey=my-nodejs-project'
+                withSonarQubeEnv('SonarQube') {
+                    // Replace 'my-nodejs-project' with your actual SonarQube project key
+                    sh 'sonar-scanner -Dsonar.projectKey=my-nodejs-project -Dsonar.sources=.'  
                 }
             }
         }
@@ -30,27 +26,21 @@ pipeline {
         stage('Quality Gate') {
             steps {
                 script {
+                    // Wait for SonarQube quality gate result
                     timeout(time: 1, unit: 'MINUTES') {
-                        def qualityGate = waitForQualityGate()
-                        if (qualityGate.status != 'OK') {
-                            error "SonarQube Quality Gate failed: ${qualityGate.status}"
-                        }
+                        waitForQualityGate abortPipeline: true
                     }
                 }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo 'Deploying the application...'
             }
         }
     }
 
     post {
-        always {
-            echo 'Cleaning up workspace...'
-            cleanWs()
+        success {
+            echo 'SonarQube analysis completed successfully.'
+        }
+        failure {
+            echo 'SonarQube analysis failed.'
         }
     }
 }
