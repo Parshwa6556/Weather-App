@@ -32,6 +32,17 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+            script {
+                // Run SonarQube scanner
+                withSonarQubeEnv('SonarQube') {
+                    sh 'sonar-scanner'
+                }
+            }
+        }
+    }
+
         stage('Publish to Nexus') {
             steps {
                 writeFile file: '.npmrc', text: """
